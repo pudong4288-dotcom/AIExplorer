@@ -1,0 +1,22 @@
+{
+  "name": "aiexplorer",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "apps/backend"
+  ],
+  "scripts": {
+    "backend:dev": "npm --workspace apps/backend run dev",
+    "backend:build": "npm --workspace apps/backend run build",
+    "backend:start": "npm --workspace apps/backend run start",
+    "mobile:start": "npm --workspace apps/mobile run start",
+    "mobile:typecheck": "npm --workspace apps/mobile run typecheck"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
+  }
+}

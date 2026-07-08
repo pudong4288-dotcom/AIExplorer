@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "AIExplorer",
+    "slug": "aiexplorer",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "AIExplorer uses the camera so you can analyze photos for educational explanations.",
+        "NSPhotoLibraryUsageDescription": "AIExplorer lets you choose photos to analyze for educational explanations."
+      }
+    },
+    "android": {
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "local-mvp"
+      }
+    }
+  }
+}
