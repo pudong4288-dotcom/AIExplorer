@@ -1,25 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { config } from "./config.js";
-import { analyzeImage } from "./analysis.js";
+import { analyzeImageWithMockModel } from "./mockVision.js";
 
-test("mock provider is the default analysis provider", () => {
-  assert.equal(config.visionProvider, "mock");
+const imageFile = {
+  buffer: Buffer.from("fake image bytes"),
+  originalname: "sample.jpg",
+  mimetype: "image/jpeg",
+  fieldname: "image",
+  encoding: "7bit",
+  size: 16,
+  stream: null as never,
+  destination: "",
+  filename: "",
+  path: ""
+};
+
+test("OpenAI is the default analysis provider", () => {
+  assert.equal(config.visionProvider, "openai");
 });
 
-test("default analysis returns a mock result without OpenAI configuration", async () => {
-  const result = await analyzeImage({
-    buffer: Buffer.from("fake image bytes"),
-    originalname: "sample.jpg",
-    mimetype: "image/jpeg",
-    fieldname: "image",
-    encoding: "7bit",
-    size: 16,
-    stream: null as never,
-    destination: "",
-    filename: "",
-    path: ""
-  });
+test("mock analysis remains available when explicitly selected for local development", async () => {
+  const result = await analyzeImageWithMockModel(imageFile);
 
   assert.equal(typeof result.name, "string");
   assert.ok(result.name.length > 0);

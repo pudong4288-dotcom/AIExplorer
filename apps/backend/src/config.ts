@@ -4,7 +4,9 @@ dotenv.config();
 
 const DEFAULT_PORT = 3001;
 const DEFAULT_MAX_IMAGE_MB = 8;
-const DEFAULT_VISION_PROVIDER = "mock";
+const DEFAULT_VISION_PROVIDER = "openai";
+const DEFAULT_OPENAI_TIMEOUT_MS = 30_000;
+const DEFAULT_OPENAI_MAX_RETRIES = 1;
 
 function parseNumber(value: string | undefined, fallback: number): number {
   if (!value) {
@@ -40,6 +42,11 @@ export const config = {
   openAiApiKey: process.env.OPENAI_API_KEY ?? "",
   openAiModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
   openAiBaseUrl: process.env.OPENAI_BASE_URL || undefined,
+  openAiTimeoutMs: parseNumber(process.env.OPENAI_TIMEOUT_MS, DEFAULT_OPENAI_TIMEOUT_MS),
+  openAiMaxRetries: Math.max(
+    0,
+    Math.floor(parseNumber(process.env.OPENAI_MAX_RETRIES, DEFAULT_OPENAI_MAX_RETRIES))
+  ),
   corsOrigin: parseCorsOrigins(process.env.CORS_ORIGIN),
   maxImageMb: parseNumber(process.env.MAX_IMAGE_MB, DEFAULT_MAX_IMAGE_MB)
 };

@@ -37,18 +37,22 @@ npm run dev
 
 Environment variables:
 
-- `VISION_PROVIDER` - defaults to `mock`; set to `openai` later to enable real OpenAI vision calls
+- `VISION_PROVIDER` - defaults to `openai`; set to `mock` only for offline UI development
 - `PORT` - server port, defaults to `3001`
 
-Optional environment variables:
+Required for real image analysis:
 
-- `OPENAI_API_KEY` - required only when `VISION_PROVIDER=openai`
+- `OPENAI_API_KEY` - OpenAI project API key. It is used only by the backend and must never be set in Expo variables.
+
+Optional environment variables:
 - `OPENAI_MODEL` - defaults to `gpt-4o-mini`
 - `OPENAI_BASE_URL` - set this for OpenAI-compatible providers
+- `OPENAI_TIMEOUT_MS` - provider request timeout, defaults to `30000`
+- `OPENAI_MAX_RETRIES` - OpenAI SDK retries after the first attempt, defaults to `1`
 - `CORS_ORIGIN` - comma-separated allowed origins, defaults to `*`
 - `MAX_IMAGE_MB` - upload limit in megabytes, defaults to `8`
 
-For the current MVP week, the backend uses mock detections and does not call OpenAI unless `VISION_PROVIDER=openai` is explicitly set.
+The default backend path resizes the uploaded image in memory, sends it to OpenAI, validates the model's structured JSON response, and returns only the validated educational result. Images are not written to permanent storage.
 
 ## API checks
 
@@ -75,7 +79,8 @@ Expected success response:
   "summary": "A large orange-and-black butterfly known for long-distance migration.",
   "facts": [
     "Monarch butterflies migrate thousands of miles.",
-    "Their caterpillars feed on milkweed."
+    "Their caterpillars feed on milkweed.",
+    "Their orange-and-black coloring warns some predators."
   ],
   "resources": [
     {
@@ -91,9 +96,11 @@ Expected success response:
 
 Deploy `apps/backend` as the Railway service root. Set these variables in Railway:
 
-- `VISION_PROVIDER=mock` for the temporary mock-only implementation
-- `OPENAI_API_KEY` later, when switching `VISION_PROVIDER=openai`
+- `VISION_PROVIDER=openai`
+- `OPENAI_API_KEY` with a Railway service variable or secret
 - `OPENAI_MODEL` if you want a model other than `gpt-4o-mini`
+- `OPENAI_TIMEOUT_MS=30000`
+- `OPENAI_MAX_RETRIES=1`
 - `CORS_ORIGIN` if you want to restrict browser origins
 - `MAX_IMAGE_MB` if you need a different upload limit
 

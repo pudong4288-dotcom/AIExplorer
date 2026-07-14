@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 import sharp from "sharp";
 import { z } from "zod";
@@ -21,20 +22,18 @@ const resourceSchema = z.object({
 
 const analysisSchema = z.object({
   name: z.string().min(1),
-  scientificName: z.union([z.string(), z.null()]).optional(),
+  scientificName: z.string().nullable(),
   confidence: z.number().min(0).max(1),
   summary: z.string().min(1),
-  facts: z.array(z.string()).max(5).default([]),
-  resources: z.array(resourceSchema).max(3).default([])
+  facts: z.array(z.string().min(1)).max(5),
+  resources: z.array(resourceSchema).max(3)
 });
 
 const systemPrompt = [
   "You are AIExplorer, an educational vision assistant for a mobile app.",
   "Identify the main visible object, organism, place, or item in the image.",
   "Do not overclaim certainty. If the image is unclear, say that clearly.",
-  "Return only valid JSON. Do not include markdown, prose, or code fences.",
-  "Use this exact JSON shape:",
-  "{\"name\":\"Common name\",\"scientificName\":\"Scientific name or null\",\"confidence\":0.0,\"summary\":\"One short educational explanation.\",\"facts\":[\"3 to 5 concise educational facts\"],\"resources\":[{\"title\":\"Learn more\",\"type\":\"article\",\"url\":\"https://example.com\"}]}",
+  "Return only data that conforms to the response schema. Do not include markdown, prose, or code fences.",
   "Confidence must be a number from 0 to 1.",
   "For unclear images, set name to \"Unclear image\", scientificName to null, confidence to 0, summary to a short explanation, facts to [], and resources to [].",
   "Prefer reputable educational resources. Use 1 to 3 resources when the object is identifiable."
@@ -53,7 +52,9 @@ function getOpenAIClient(): OpenAI {
 
   return new OpenAI({
     apiKey: config.openAiApiKey,
-    baseURL: config.openAiBaseUrl
+    baseURL: config.openAiBaseUrl,
+    timeout: config.openAiTimeoutMs,
+    maxRetries: config.openAiMaxRetries
   });
 }
 
@@ -132,6 +133,10 @@ function normalizeAnalysisResult(parsed: unknown): AnalysisResult {
     throw new UnclearImageError("The model could not identify the image clearly.");
   }
 
+  if (facts.length < 3) {
+    throw new InvalidModelResponseError("The model returned too few educational facts.");
+  }
+
   return {
     name,
     scientificName,
@@ -199,7 +204,7 @@ export async function analyzeImageWithVisionModel(
 
   const completion = await createVisionCompletion(client, {
     model: config.openAiModel,
-    response_format: { type: "json_object" },
+    response_format: zodResponseFormat(analysisSchema, "aiexplorer_analysis"),
     messages: [
       {
         role: "system",
