@@ -17,7 +17,9 @@ const MAX_COMPLETION_TOKENS = 900;
 const resourceSchema = z.object({
   title: z.string().min(1),
   type: z.string().min(1),
-  url: z.string().url()
+  // OpenAI Structured Outputs does not accept JSON Schema's `uri` format.
+  // Validate URLs after generation in normalizeAnalysisResult instead.
+  url: z.string().min(1)
 });
 
 const analysisSchema = z.object({
