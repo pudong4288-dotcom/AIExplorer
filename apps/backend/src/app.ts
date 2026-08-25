@@ -3,6 +3,7 @@ import express, { type ErrorRequestHandler } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import multer from "multer";
+import rateLimit from "express-rate-limit";
 import { config, maxImageBytes } from "./config.js";
 import {
   HttpError,
@@ -50,6 +51,7 @@ export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
+  app.set("trust proxy", 1);
   app.use(helmet());
   app.use(
     cors({
@@ -59,11 +61,27 @@ export function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(morgan("combined"));
 
+  const analyzeLimiter = rateLimit({
+    windowMs: config.analyzeRateLimitWindowMs,
+    limit: config.analyzeRateLimitMax,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: () => config.analyzeRateLimitMax === 0,
+    handler: (_req, res) => {
+      res.status(429).json({
+        error: {
+          code: "RATE_LIMITED",
+          message: "Too many analyses. Please try again later."
+        }
+      });
+    }
+  });
+
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
   });
 
-  app.post("/analyze-image", upload.single("image"), async (req, res, next) => {
+  app.post("/analyze-image", analyzeLimiter, upload.single("image"), async (req, res, next) => {
     try {
       if (!req.file) {
         throw new HttpError(400, "NO_IMAGE", "Something went wrong. Please try another image.");

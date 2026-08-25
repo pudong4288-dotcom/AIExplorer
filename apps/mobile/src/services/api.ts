@@ -5,6 +5,7 @@ const NETWORK_MESSAGE = "Network error. Check your connection and try again.";
 const GENERIC_MESSAGE = "Something went wrong. Please try another image.";
 const TOO_LARGE_MESSAGE = "This image is too large. Please choose a smaller image.";
 const UNCLEAR_MESSAGE = "We couldn't identify this clearly. Try a closer photo.";
+const RATE_LIMIT_MESSAGE = "Too many analyses. Please try again later.";
 
 type ApiErrorBody = {
   error?: {
@@ -86,6 +87,10 @@ function mapApiError(status: number, body: ApiErrorBody | null): ImageAnalysisEr
 
   if (status === 422 || code === "UNCLEAR_IMAGE") {
     return new ImageAnalysisError(code, UNCLEAR_MESSAGE, status);
+  }
+
+  if (status === 429 || code === "RATE_LIMITED") {
+    return new ImageAnalysisError(code, RATE_LIMIT_MESSAGE, status);
   }
 
   if (status === 0 || status >= 500) {

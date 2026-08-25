@@ -48,7 +48,15 @@ export const config = {
     Math.floor(parseNumber(process.env.OPENAI_MAX_RETRIES, DEFAULT_OPENAI_MAX_RETRIES))
   ),
   corsOrigin: parseCorsOrigins(process.env.CORS_ORIGIN),
-  maxImageMb: parseNumber(process.env.MAX_IMAGE_MB, DEFAULT_MAX_IMAGE_MB)
+  maxImageMb: parseNumber(process.env.MAX_IMAGE_MB, DEFAULT_MAX_IMAGE_MB),
+  analyzeRateLimitMax: Math.max(
+    0,
+    Math.floor(parseNumber(process.env.ANALYZE_RATE_LIMIT_MAX, 30))
+  ),
+  analyzeRateLimitWindowMs: Math.max(
+    1000,
+    Math.floor(parseNumber(process.env.ANALYZE_RATE_LIMIT_WINDOW_MS, 60 * 60 * 1000))
+  )
 };
 
 export const maxImageBytes = config.maxImageMb * 1024 * 1024;
