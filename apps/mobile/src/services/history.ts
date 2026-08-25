@@ -36,3 +36,7 @@ export async function saveRecentScan(
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(scans));
   return scans;
 }
+
+export async function clearRecentScans(): Promise<void> {
+  await AsyncStorage.removeItem(STORAGE_KEY);
+}

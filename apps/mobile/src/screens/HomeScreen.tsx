@@ -5,6 +5,8 @@ type HomeScreenProps = {
   recentScans: RecentScan[];
   onChooseGallery: () => void;
   onTakePhoto: () => void;
+  onOpenPrivacy: () => void;
+  onClearHistory: () => void;
 };
 
 function formatDate(value: string): string {
@@ -22,7 +24,13 @@ function formatDate(value: string): string {
   });
 }
 
-export function HomeScreen({ recentScans, onChooseGallery, onTakePhoto }: HomeScreenProps) {
+export function HomeScreen({
+  recentScans,
+  onChooseGallery,
+  onTakePhoto,
+  onOpenPrivacy,
+  onClearHistory
+}: HomeScreenProps) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -31,6 +39,9 @@ export function HomeScreen({ recentScans, onChooseGallery, onTakePhoto }: HomeSc
         <Text style={styles.privacyNote}>
           Images are uploaded only for analysis and are not permanently stored by this app.
         </Text>
+        <Pressable onPress={onOpenPrivacy}>
+          <Text style={styles.privacyLink}>Privacy policy</Text>
+        </Pressable>
       </View>
 
       <View style={styles.actions}>
@@ -44,7 +55,12 @@ export function HomeScreen({ recentScans, onChooseGallery, onTakePhoto }: HomeSc
 
       {recentScans.length > 0 ? (
         <View style={styles.historySection}>
-          <Text style={styles.sectionTitle}>Recent scans</Text>
+          <View style={styles.historyHeader}>
+            <Text style={styles.sectionTitle}>Recent scans</Text>
+            <Pressable onPress={onClearHistory}>
+              <Text style={styles.clearButton}>Clear</Text>
+            </Pressable>
+          </View>
           {recentScans.map((scan) => (
             <View key={scan.id} style={styles.historyItem}>
               <Image source={{ uri: scan.imageUri }} style={styles.historyImage} />
@@ -92,6 +108,12 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     marginTop: 16
   },
+  privacyLink: {
+    color: "#0f766e",
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 10
+  },
   actions: {
     gap: 12,
     marginTop: 34
@@ -125,11 +147,21 @@ const styles = StyleSheet.create({
   historySection: {
     marginTop: 36
   },
+  historyHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12
+  },
   sectionTitle: {
     color: "#111827",
     fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 12
+    fontWeight: "800"
+  },
+  clearButton: {
+    color: "#0f766e",
+    fontSize: 15,
+    fontWeight: "700"
   },
   historyItem: {
     backgroundColor: "#ffffff",

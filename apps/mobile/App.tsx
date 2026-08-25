@@ -3,13 +3,14 @@ import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { ErrorAlert } from "./src/components/ErrorAlert";
 import { analyzeImage, ImageAnalysisError } from "./src/services/api";
-import { loadRecentScans, saveRecentScan } from "./src/services/history";
+import { clearRecentScans, loadRecentScans, saveRecentScan } from "./src/services/history";
 import { HomeScreen } from "./src/screens/HomeScreen";
 import { ImagePickerScreen } from "./src/screens/ImagePickerScreen";
+import { PrivacyScreen } from "./src/screens/PrivacyScreen";
 import { ResultScreen } from "./src/screens/ResultScreen";
 import type { AnalysisResult, RecentScan, SelectedImage } from "./src/types/analysis";
 
-type Screen = "home" | "preview" | "result";
+type Screen = "home" | "preview" | "result" | "privacy";
 
 const PERMISSION_ERROR =
   "AIExplorer needs permission to access your camera or photo library.";
@@ -104,7 +105,17 @@ export default function App() {
     setErrorMessage(null);
   }
 
+  async function clearHistory() {
+    setErrorMessage(null);
+    await clearRecentScans();
+    setRecentScans([]);
+  }
+
   function renderScreen() {
+    if (screen === "privacy") {
+      return <PrivacyScreen onBack={() => setScreen("home")} />;
+    }
+
     if (screen === "preview" && selectedImage) {
       return (
         <ImagePickerScreen
@@ -131,6 +142,10 @@ export default function App() {
         recentScans={recentScans}
         onChooseGallery={chooseFromGallery}
         onTakePhoto={takePhoto}
+        onOpenPrivacy={() => setScreen("privacy")}
+        onClearHistory={() => {
+          void clearHistory();
+        }}
       />
     );
   }
