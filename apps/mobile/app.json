@@ -2,28 +2,54 @@
   "expo": {
     "name": "AIExplorer",
     "slug": "aiexplorer",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f766e"
+    },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.pudong4288.aiexplorer",
+      "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "AIExplorer uses the camera so you can analyze photos for educational explanations.",
-        "NSPhotoLibraryUsageDescription": "AIExplorer lets you choose photos to analyze for educational explanations."
+        "NSPhotoLibraryUsageDescription": "AIExplorer lets you choose photos to analyze for educational explanations.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
       }
     },
     "android": {
+      "package": "com.pudong4288.aiexplorer",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f766e"
+      },
       "permissions": [
         "CAMERA",
         "READ_MEDIA_IMAGES",
         "READ_EXTERNAL_STORAGE"
       ]
     },
-    "extra": {
-      "eas": {
-        "projectId": "local-mvp"
-      }
-    }
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "AIExplorer uses the camera so you can analyze photos for educational explanations.",
+          "photosPermission": "AIExplorer lets you choose photos to analyze for educational explanations."
+        }
+      ]
+    ]
   }
 }
