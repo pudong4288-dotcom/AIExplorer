@@ -51,6 +51,8 @@ Optional environment variables:
 - `OPENAI_MAX_RETRIES` - OpenAI SDK retries after the first attempt, defaults to `1`
 - `CORS_ORIGIN` - comma-separated allowed origins, defaults to `*`
 - `MAX_IMAGE_MB` - upload limit in megabytes, defaults to `8`
+- `ANALYZE_RATE_LIMIT_MAX` - max `/analyze-image` requests per IP per window, defaults to `30`
+- `ANALYZE_RATE_LIMIT_WINDOW_MS` - rate-limit window in milliseconds, defaults to `3600000` (1 hour)
 
 The default backend path resizes the uploaded image in memory, sends it to OpenAI, validates the model's structured JSON response, and returns only the validated educational result. Images are not written to permanent storage.
 
@@ -103,13 +105,28 @@ Deploy `apps/backend` as the Railway service root. Set these variables in Railwa
 - `OPENAI_MAX_RETRIES=1`
 - `CORS_ORIGIN` if you want to restrict browser origins
 - `MAX_IMAGE_MB` if you need a different upload limit
+- `ANALYZE_RATE_LIMIT_MAX=30`
+- `ANALYZE_RATE_LIMIT_WINDOW_MS=3600000`
 
 The backend includes `apps/backend/railway.toml` with a build command, start command, and `/health` health check.
 
-## Before App Store submission
+## App Store (iOS)
 
-- Add branded icons and splash screens.
-- Test camera and gallery permissions on real iOS and Android devices.
-- Add privacy policy copy that explains transient image upload for analysis.
-- Decide whether recent local scans should be user-clearable from settings.
-- Add rate limiting or abuse protection before public launch.
+The iOS bundle ID is `com.pudong4288.aiexplorer`. Use the Apple Developer team that holds the paid membership.
+
+1. Deploy the backend on Railway and copy the public HTTPS URL.
+2. Host `privacy.html` (GitHub Pages from this repo is enough). Use that URL in App Store Connect.
+3. Create the App ID and the App Store Connect iOS app with the same bundle ID.
+4. From `apps/mobile`:
+
+```bash
+npx eas-cli login
+npx eas-cli init
+npx eas-cli secret:create --name EXPO_PUBLIC_API_BASE_URL --value https://your-backend.up.railway.app --scope project
+npx eas-cli build --platform ios --profile production
+npx eas-cli submit --platform ios --profile production
+```
+
+Set `EXPO_PUBLIC_API_BASE_URL` as an EAS environment variable / secret so production builds do not point at localhost.
+
+App Store Connect still needs screenshots, the privacy policy URL, and App Privacy answers: photos are sent to the server for one-time analysis, not stored, and a third-party vision model is used.
