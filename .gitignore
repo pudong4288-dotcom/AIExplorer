@@ -9,3 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 .DS_Store
 coverage/
+
+# Papers, patents, and other local-only materials (do not publish to GitHub)
+paper/
+patent/
