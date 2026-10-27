@@ -12,14 +12,15 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
-    "expo": "~54.0.35",
-    "expo-constants": "~18.0.13",
-    "expo-image-picker": "~17.0.11",
-    "react": "19.1.0",
-    "react-native": "0.81.5"
+    "expo": "~58.0.19",
+    "expo-constants": "~58.0.13",
+    "expo-image-picker": "~58.0.10",
+    "expo-splash-screen": "~58.0.11",
+    "react": "19.3.0",
+    "react-native": "0.88.0"
   },
   "devDependencies": {
-    "@types/react": "~19.2.17",
-    "typescript": "^5.7.2"
+    "@types/react": "~19.3.0",
+    "typescript": "~6.0.3"
   }
 }
