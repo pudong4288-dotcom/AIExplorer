@@ -10,9 +10,12 @@ AIExplorer is a production-oriented MVP for an AI vision education app. The Expo
 ## Run the mobile app locally
 
 ```bash
+git pull
 npm install
-npm run mobile:start
+npm run mobile:start -- --clear
 ```
+
+The app uses Expo SDK 58, so it opens in the current Expo Go from the App Store. If Expo Go says the project uses an older SDK (for example SDK 54), the dev server is running an old checkout: pull, run `npm install` again, and restart with `--clear`.
 
 Set the mobile API URL before starting Expo:
 
